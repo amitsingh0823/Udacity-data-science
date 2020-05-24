@@ -7,3 +7,7 @@ In this project, I did the analysis of [Stack Overflow Survey Data 2019](https:/
 
 Because the data for this project is quite big and I could not put it in the github repository, you can download the data from [here](https://drive.google.com/file/d/1QOmVDpd8hcVYqqUXDXf68UMDWQZP0wQV/view). We are going to use the `survey_results_public.csv` file.
 
+## 2. Disaster Response Pipeline Project
+In this project, we are going to built a web app to do Machine Learning task, which is classifying a message. Analyze disaster data from Figure Eight to build an NLP model for an API that classifies disaster messages. The first part of this project consisted of creating an ETL pipeline with data stored in SQL database. Then used the NLP model to categorize these events to reach out for a relevant relief agency. Finally, Flask was used to create the API. *tools: python, NLP, sklearn, numpy, matplotlib, FLASK, ETL.
+
+In order to run this project, you need the model (pickle file) and since the size is too big for github, you can download the pickle model in [here](https://drive.google.com/file/d/1ngLraihD2DlodsrLRuz6wLofkWCGaWc5/view).
