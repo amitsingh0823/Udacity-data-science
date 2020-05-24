@@ -1,50 +1,69 @@
 # Disaster Response Pipeline Project
 
-### Project Motivation:
+You can check the running web app in this [link](https://view6914b2f4-3001.udacity-student-workspaces.com/).
 
-In this project. I made use of the data engineering concepts to analyze disaster data from Figure Eight to build a model for an API that classifies disaster messages.
+---
 
-The datasets used contain real messages that were sent during disaster events. I created a machine learning pipline to categorize these event to reach out for a relevant relief agency.
+## Prerequisites
+### Libraries
+To be able to run this project, you need to install the required libraries in the `requirements.txt`. Run the command below.
+```
+pip install -r requirements.txt
+```
+### Model
+You can build your own model using `train_classifier.py`, but if you want to use the pre-trained model you can download it [here](https://drive.google.com/file/d/1ngLraihD2DlodsrLRuz6wLofkWCGaWc5/view?usp=sharing).
 
-### File Structure:
+---
 
-	- app
-	| - template
-	| |- master.html  # main page of web app
-	| |- go.html  # classification result page of web app
-	|- run.py  # Flask file that runs app
+## Introduction
+In this project, we are going to built a web app to do Machine Learning task, which is classifying a message. If we breakdown, there are three major steps in this project.
 
-	- data
-	|- disaster_categories.csv  # data to process 
-	|- disaster_messages.csv  # data to process
-	|- process_data.py
-	|- InsertDatabaseName.db   # database to save clean data to
+### 1. ETL Process
+We merge the dataset in the `data` folder (`disaster_messages.csv` and `disaster_categories.csv`), then do some preprocessing to get the clean data. We store the clean data in sqlite database `DisasterResponse.db`.
 
-	- models
-	|- train_classifier.py
-	|- classifier.pkl  # saved model 
+### 2. Training Model
+Using scikit-learn, then we train the classifier to be able to get a model which can classify a message, save the model in the `models` folder with the name `classifier.pkl`.
 
-	- README.md
+### 3. Run the Web App
+Using flask, we can run our model and deploy in the website so that people can manually type the message and see its category. 
 
-### Instructions:
+---
+
+## Files
+
+#### `data/disaster_categories.csv` , `data/disaster_messages.csv`
+
+The dataset we use in this project, `disaster_messages.csv` contains the message (translated and original) and genre of the message. `disaster_categories.csv` contains the categories of each message.
+
+#### `data/process_data.py`
+
+This file is used for the ETL process, where we merge the `disaster_messages.csv` and `disaster_categories.csv` then store it in sqlite database.
+
+#### `models/train_classifier.py`
+
+This is where we train our model to obtain the classfier. We load the data from the sqlite database, do some text preprocessing using Count Vectorizer and TF-IDF, train the model, and save the model as a pickle object.
+
+#### `app/run.py`
+
+The flask application that being used to run the web app. You can modify the web page in the `app/templates/master.html` and `app/templates/go.html`.
+
+---
+
+## Instructions
 1. Run the following commands in the project's root directory to set up your database and model.
 
     - To run ETL pipeline that cleans data and stores in database
-        `python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db`
+        ```
+        python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+        ```
     - To run ML pipeline that trains classifier and saves
-        `python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl`
+        ```
+        python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
+        ```
 
-2. Run the following command in the app's directory to run your web app.
-    `python run.py`
+2. Run the following command in the app's directory to run your web app. 
+```
+python run.py
+```
 
 3. Go to http://0.0.0.0:3001/
-
-
-![disaster_response_project2](disaster_response_project2.png)
-
-### Example 
-
-Type a message such as: Hurricane lead to water and food shortage in costa rica
-
-
-![Example](Example.png)
