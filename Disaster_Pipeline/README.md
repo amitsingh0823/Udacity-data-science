@@ -11,7 +11,7 @@ To be able to run this project, you need to install the required libraries in th
 pip install -r requirements.txt
 ```
 ### Model
-You can build your own model using `train_classifier.py`, but if you want to use the pre-trained model given in the model using `classifier.py`
+You can build your own model using `train_classifier.py`, but if you want to use the pre-trained model given in the model using `classifier.pkl`
 
 ---
 
