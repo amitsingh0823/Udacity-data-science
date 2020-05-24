@@ -1,17 +1,19 @@
+import nltk
 import json
 import plotly
 import pandas as pd
+#import plotly.graph_objects as go
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+nltk.download(['punkt','wordnet'])
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar, Layout, Figure
+from plotly.graph_objs import Bar, Histogram
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
-import numpy as np
 
 app = Flask(__name__)
 
@@ -33,74 +35,84 @@ df = pd.read_sql_table('messages', engine)
 # load model
 model = joblib.load("../models/classifier.pkl")
 
+
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
     
-    graphs = []
     # extract data needed for visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
+    # Viz 1
+    genre = df.groupby('genre').count()['id'].sort_values()
     
-    graph_one = []
-    graph_one.append(
-        Bar(
-                x=genre_names,
-                y=genre_counts
-            )
-        )
-    layout_one = Layout(title = 'Distribution of Message Genres',
-               yaxis = {'title': "Count"},
-                xaxis = {'title': "Genre"}
+    # Viz 2
+    df['text length'] = df['message'].apply(lambda x: len(x.split()))
+    histogram = df[df['text length'] < 100].groupby('text length').count()['id']
+
+    # Viz 3
+    total_category = df.drop(columns=['id','message','original','genre', 'text length']).sum().sort_values(ascending=False).head(5)
+
+    # create visuals
+    graphs = [
+        {
+            'data': [
+                Bar(
+                    x=genre.values,
+                    y=genre.index,
+                    orientation='h'
                 )
+            ],
 
-    graphs.append(dict(data=graph_one, layout=layout_one))
-
-     #Show Distribution of different categories
-    category_name = list(df.columns[4:])
-    category_counts = [np.sum(df[col]) for col in category_name]
-
-    graph_two = []
-    graph_two.append(
-            Bar(
-                x=category_name,
-                y=category_counts
-            )
-        )
-    layout_two =  Layout(title = 'Distribution of Message Categories',
-                yaxis = {'title': "Count"},
-                xaxis = {'title': "Genre"})
-
-    graphs.append(dict(data=graph_two, layout=layout_two))
-
-    # extract data exclude related
-    categories = df.iloc[:,4:]
-    categories_mean = categories.mean().sort_values(ascending=False)[1:11]
-    categories_names = list(categories_mean.index)
-
-    graph_three = []
-    graph_three.append(
-            Bar(
-                x=category_name,
-                y=category_counts
-            )
-        )
-    layout_three =  Layout(title = 'Top 10 Message Categories',
-                yaxis = {
-                    'title': "Percentage", 
-                    'titlefont': {'color': 'black', 'size': 12}
+            'layout': {
+                'title': 'Distribution of Message Genres',
+                'yaxis': {
+                    'title': "Genre"
                 },
-                xaxis = {
-                'title': "Category", 
-                'titlefont': {'color': 'black', 'size': 12},
-                'tickangle':45,
-                'automargin': True
-                  }
-                )
-    
-    graphs.append(dict(data=graph_three, layout=layout_three))
+                'xaxis': {
+                    'title': "Counts"
+                }
+            }
+        },
 
+        {
+            'data': [
+                Bar(
+                    x=histogram.index,
+                    y=histogram.values
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Messages Length',
+                'yaxis': {
+                    'title': "Total Messages"
+                },
+                'xaxis': {
+                    'title': "Total Words"
+                }
+            }
+        },
+
+        {
+            'data': [
+                Bar(
+                    x=total_category.index,
+                    y=total_category.values
+                )
+            ],
+
+            'layout': {
+                'title': 'Total Messages per Category (Top 5)',
+                'yaxis': {
+                    'title': "Total"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        }
+    ]
+    
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)

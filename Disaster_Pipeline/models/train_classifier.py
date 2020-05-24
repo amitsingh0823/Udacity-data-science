@@ -1,126 +1,96 @@
-# import libraries
-import sys
-import sqlite3
-import pandas as pd
-from sqlalchemy import create_engine
-from string import punctuation
-import numpy as np
-
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report
-from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report
+from sklearn.model_selection import GridSearchCV
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from sklearn.pipeline import Pipeline
+from sqlalchemy import create_engine
 
-from sklearn.ensemble import AdaBoostClassifier
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.externals import joblib
-
+import pandas as pd
+import numpy as np
+import pickle
 import nltk
-nltk.download('punkt')
-nltk.download('wordnet')
+import sys
+nltk.download(['punkt','wordnet'])
+
 
 def load_data(database_filepath):
-    """
-    This function loads data from given database path 
-    and returns a dataframe
-    Input:
-        database_filepath: database file path
-    Output:
-        X: traing message list
-        Y: training target
-        category names  
-    """
-    # load data from database
-    engine = create_engine('sqlite:///'+ database_filepath)
-    df = pd.read_sql_table('messages',engine)
-    
-    # define features and target
-    X = df.message
-    y = df.iloc[:,4:]
-    category_names = list(df.columns[4:])
-    
-    return X, y, category_names
+    """load data from the sqlite database"""
+
+    # Read the table as pandas dataframe
+    engine = create_engine('sqlite:///{}'.format(database_filepath))
+    df = pd.read_sql_table('messages', con=engine)
+
+    # Split the dataframe into x and y
+    X = df['message']
+    Y = df.drop(columns=['id','message','original','genre'])
+
+    # Get the label names
+    category_names = Y.columns
+
+    return X, Y, category_names
 
 def tokenize(text):
-    """
-    Tokenization function to process the text data to normalize, lemmatize, and tokenize text. 
-    Input: Text data
-    Output: List of clean tokens 
-    """
-     # remove punctations
-    text =  ''.join([c for c in text if c not in punctuation])
-    
-    #tokenize text
+    """Tokenize and lemmatize each word in a given text"""
+
+    # Tokenize the string text and initiate the lemmatizer
     tokens = word_tokenize(text)
-    
-    # initiate lemmatizer
     lemmatizer = WordNetLemmatizer()
 
+    # Lemmatize each word in tokens
     clean_tokens = []
-    for token in tokens:
-        # lemmatize, normalize case, and remove leading/trailing white space
-        clean_tok = lemmatizer.lemmatize(token).lower().strip()
+    for tok in tokens:
+        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
         clean_tokens.append(clean_tok)
+
     return clean_tokens
 
+
 def build_model():
-    """
-    Build Machine learning pipleine using adaboost classifier
-    Input:
-       None
-    Output: 
-        clf: gridSearch Model
-    """
-    ada_pipeline =  Pipeline([
-        ('vect', CountVectorizer(tokenizer=tokenize)),
-        ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier((AdaBoostClassifier())))
+    """Create a machine learning pipeline"""
+
+    # Create a pipeline consists of count vectorizer -> KneighborsClassifier()
+    pipeline = Pipeline([
+        
+        ('text_pipeline', Pipeline([
+            ('vect', CountVectorizer(tokenizer=tokenize)),
+            ('tfidf', TfidfTransformer())
+        ])),
+
+        ('clf', MultiOutputClassifier(KNeighborsClassifier()))
     ])
-    # grid search parameters
+
+    ## Find the optimal model using GridSearchCV
     parameters = {
-    'tfidf__norm':['l2','l1'],
-    'vect__stop_words': ['english',None],
-    'clf__estimator__learning_rate' :[0.1, 0.5, 1, 2],
-    'clf__estimator__n_estimators' : [50, 60, 70],
+        'text_pipeline__tfidf__use_idf': (True, False),
+        'clf__estimator__weights': ['uniform', 'distance']
     }
-    #create grid search object
-    clf_grid_model = GridSearchCV(ada_pipeline, parameters)
-    return clf_grid_model
+
+    pipeline = GridSearchCV(pipeline, param_grid=parameters, verbose=5, cv=2, n_jobs=2)
+
+    return pipeline
+
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    """
-    Prints the classification report for the given model and test data
-    Input:
-        model: trained model
-        X_test: test data for the predication 
-        Y_test: true test labels for the X_test data
-    Output:
-        None 
-    """
-    # predict 
-    y_pred = model.predict(X_test)
-    # print the metrics
-    for i, col in enumerate(category_names):
-        print('{} category metrics: '.format(col))
-        print(classification_report(Y_test.iloc[:,i], y_pred[:,i]))
-    
+    """Display the classification report for the given model"""
+
+    # Predict the given X_test and create the report based on the Y_pred
+    Y_pred = model.predict(X_test)
+    print(classification_report(Y_test, Y_pred, target_names=category_names))
 
 
 def save_model(model, model_filepath):
-    """
-    This method is used to export a model as a pickle file
-    Input:
-        model: trained model 
-        model_filepath: location to store the model
-    Output: None
-    """
-    joblib.dump(model, model_filepath)
+    """Save the given model into pickle object"""
+
+    # Save the model based on model_filepath given
+    pkl_filename = '{}'.format(model_filepath)
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(model, file)
 
 
 def main():
