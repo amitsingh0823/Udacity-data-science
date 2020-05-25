@@ -17,3 +17,5 @@ Used uplift modeling techniques to identify which groups of customers are most r
 
 ## 4.[Recommendations with IBM](https://github.com/amitsingh0823/Udacity-data-science/tree/master/Recommendations_with_IBM)
 Built a recommendation engine for IBM Watson platform based on user behavior and social network data, to surface content most likely to be relevant to a user.  This project consisted of building various types of recommendation engines such as rank-based, user-user collaborative filtering, and matrix factorization.
+
+# Certificate 
