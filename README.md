@@ -15,5 +15,5 @@ In order to run this project, you need the model (pickle file) and since the siz
 ## 3.[Building a Promotional Strategy for Starbucks Customers](https://github.com/amitsingh0823/Udacity-data-science/tree/master/Starbucks_Project) 
 Used uplift modeling techniques to identify which groups of customers are most responsive to each type of offer. The data mimic Starbucks customers' behavior on the rewards mobile app. This required data preprocessing, RFM clustering(Kmeans), and xgboost to build the models. tools: python, sklearn, data visualization,numpy, pandas,RFM clustering, uplift modeling, xgboost
 
-## 4.[Recommendations with IBM](https://github.com/nesreensada/Data-Scientist-Udacity-Nanodegree-Term2/tree/master/Recommendations_with_IBM)
+## 4.[Recommendations with IBM](https://github.com/amitsingh0823/Udacity-data-science/tree/master/Recommendations_with_IBM)
 Built a recommendation engine for IBM Watson platform based on user behavior and social network data, to surface content most likely to be relevant to a user.  This project consisted of building various types of recommendation engines such as rank-based, user-user collaborative filtering, and matrix factorization.
