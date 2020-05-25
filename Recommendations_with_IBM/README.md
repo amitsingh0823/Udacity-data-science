@@ -1,5 +1,5 @@
 # Recommendations with IBM
-
+### GITHUB [LINK](https://github.com/amitsingh0823/Udacity-data-science/tree/master/Recommendations_with_IBM)
 ### Installations
 
 This project requires **Python 3.x** and the following Python libraries installed:
