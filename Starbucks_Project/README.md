@@ -1,6 +1,7 @@
 # Data Scientist Nanodegree
 # Capstone Project
 ## Project: Starbucks Promotion Strategy 
+### GITHUB [LINK:](https://github.com/amitsingh0823/Udacity-data-science/tree/master/Starbucks_Project)
 
 ### Installations
 
@@ -22,7 +23,7 @@ install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python di
 
 As per Udacity Data Scientist Nanodegree project Term 2. This porject is the Capstone project for this term nanodegree. I was intriguted to analyze the customers behavior and promotion strategies. 
 
-for more information refer to the medium blogpost for this project:
+for more information refer to the medium blogpost for this project:https://medium.com/@amit.singh0823/profitable-promotion-strategy-easily-with-uplift-modeling-15288ba841b4
 
 ### Summary of the project
 
