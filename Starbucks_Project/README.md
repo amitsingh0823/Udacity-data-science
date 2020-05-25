@@ -21,7 +21,7 @@ install [Anaconda](https://www.continuum.io/downloads), a pre-packaged Python di
 
 ### Project Motivation
 
-As per Udacity Data Scientist Nanodegree project Term 2. This porject is the Capstone project for this term nanodegree. I was intriguted to analyze the customers behavior and promotion strategies. 
+As per Udacity Data Scientist Nanodegree project Term 2. This project is the Capstone project for this term nanodegree. I was intriguted to analyze the customers behavior and promotion strategies. 
 
 for more information refer to the medium blogpost for this project:https://medium.com/@amit.singh0823/profitable-promotion-strategy-easily-with-uplift-modeling-15288ba841b4
 
