@@ -2,7 +2,7 @@ import nltk
 import json
 import plotly
 import pandas as pd
-#import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
